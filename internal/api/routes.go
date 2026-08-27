@@ -11,6 +11,8 @@ func (config *Config) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("PUT /Dashboard/UpdateNote/{note_id}", config.UpdateNote)
 	mux.HandleFunc("POST /Dashboard/CreateNote", config.AddNote)
 	mux.HandleFunc("GET /Dashboard/GetNotes", config.GetNotes)
-	mux.HandleFunc("POST /Dashboard/ResgiterUser", config.RegisterUser)
+	mux.HandleFunc("POST /Dashboard/RegisterUser", config.RegisterUser)
 	mux.HandleFunc("POST /Dashboard/LoginUser", config.LoginUser)
+	mux.HandleFunc("POST /Dashboard/revoke", config.Revoke)
+	mux.HandleFunc("POST /Dashboard/refresh", config.Refresh)
 }

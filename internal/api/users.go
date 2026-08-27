@@ -7,6 +7,8 @@ import (
 	"myapp/internal/auth"
 	"myapp/internal/database"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -14,6 +16,14 @@ import (
 type UserRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type UserLoginResponse struct {
+	Id           uuid.UUID `json:"id"`
+	Email        string    `json:"email"`
+	CreatedAt    time.Time `json:"created_at"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
 }
 
 type UserResponse struct {
@@ -105,10 +115,40 @@ func (config *Config) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if IsCorrect {
-		RespondWithJson(w, http.StatusOK, "Login Successfull")
+	if !IsCorrect {
+		RespondWithError(w, http.StatusUnauthorized, "Invalid Email or Password")
 		return
 	}
 
-	RespondWithJson(w, http.StatusUnauthorized, "Invalid Email or Password")
+	expiresIn := time.Hour
+
+	token, err := auth.MakeJWT(DbUser.ID, os.Getenv("JWT_SECRET"), expiresIn)
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "server error")
+		return
+	}
+
+	RefreshToken := auth.MakeRefreshToken()
+	_, err = config.DB.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
+		Token:     RefreshToken,
+		ExpiresAt: time.Now().Add(60 * 24 * time.Hour),
+		RevokedAt: sql.NullTime{},
+		Userid:    DbUser.ID,
+	})
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	UserLogResp := UserLoginResponse{
+		Id:           DbUser.ID,
+		Email:        DbUser.Email,
+		CreatedAt:    DbUser.CreatedAt,
+		AccessToken:  token,
+		RefreshToken: RefreshToken,
+	}
+
+	RespondWithJson(w, http.StatusOK, UserLogResp)
 }
