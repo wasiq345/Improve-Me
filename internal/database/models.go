@@ -16,3 +16,10 @@ type Note struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type User struct {
+	ID           uuid.UUID
+	CreatedAt    time.Time
+	Email        string
+	PasswordHash string
+}
