@@ -16,6 +16,7 @@ type Note struct {
 	DailyNote string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	UserID    uuid.UUID
 }
 
 type RefreshToken struct {

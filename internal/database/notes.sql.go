@@ -12,20 +12,26 @@ import (
 )
 
 const createNote = `-- name: CreateNote :one
-INSERT INTO Notes (note_id, daily_note, created_at, updated_at) values (
-        gen_random_uuid(), $1, NOW(), NOW()
+INSERT INTO Notes (note_id, user_id, daily_note, created_at, updated_at) values (
+        gen_random_uuid(), $1, $2, NOW(), NOW()
 )
-RETURNING note_id, daily_note, created_at, updated_at
+RETURNING note_id, daily_note, created_at, updated_at, user_id
 `
 
-func (q *Queries) CreateNote(ctx context.Context, dailyNote string) (Note, error) {
-	row := q.db.QueryRowContext(ctx, createNote, dailyNote)
+type CreateNoteParams struct {
+	UserID    uuid.UUID
+	DailyNote string
+}
+
+func (q *Queries) CreateNote(ctx context.Context, arg CreateNoteParams) (Note, error) {
+	row := q.db.QueryRowContext(ctx, createNote, arg.UserID, arg.DailyNote)
 	var i Note
 	err := row.Scan(
 		&i.NoteID,
 		&i.DailyNote,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -41,11 +47,11 @@ func (q *Queries) DeleteNote(ctx context.Context, noteID uuid.UUID) error {
 }
 
 const getAllNotes = `-- name: GetAllNotes :many
-SELECT note_id, daily_note, created_at, updated_at FROM Notes
+SELECT note_id, daily_note, created_at, updated_at, user_id FROM Notes where user_id = $1
 `
 
-func (q *Queries) GetAllNotes(ctx context.Context) ([]Note, error) {
-	rows, err := q.db.QueryContext(ctx, getAllNotes)
+func (q *Queries) GetAllNotes(ctx context.Context, userID uuid.UUID) ([]Note, error) {
+	rows, err := q.db.QueryContext(ctx, getAllNotes, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +64,7 @@ func (q *Queries) GetAllNotes(ctx context.Context) ([]Note, error) {
 			&i.DailyNote,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -73,7 +80,7 @@ func (q *Queries) GetAllNotes(ctx context.Context) ([]Note, error) {
 }
 
 const readNote = `-- name: ReadNote :one
-SELECT note_id, daily_note, created_at, updated_at FROM Notes WHERE note_id = $1
+SELECT note_id, daily_note, created_at, updated_at, user_id FROM Notes WHERE note_id = $1
 `
 
 func (q *Queries) ReadNote(ctx context.Context, noteID uuid.UUID) (Note, error) {
@@ -84,6 +91,7 @@ func (q *Queries) ReadNote(ctx context.Context, noteID uuid.UUID) (Note, error) 
 		&i.DailyNote,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.UserID,
 	)
 	return i, err
 }
@@ -92,7 +100,7 @@ const updateNote = `-- name: UpdateNote :one
 UPDATE Notes
 SET daily_note = $2, updated_at = NOW()
 where note_id = $1
-RETURNING note_id, daily_note, created_at, updated_at
+RETURNING note_id, daily_note, created_at, updated_at, user_id
 `
 
 type UpdateNoteParams struct {
@@ -108,6 +116,7 @@ func (q *Queries) UpdateNote(ctx context.Context, arg UpdateNoteParams) (Note, e
 		&i.DailyNote,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.UserID,
 	)
 	return i, err
 }
