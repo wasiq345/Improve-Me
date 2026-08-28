@@ -3,8 +3,10 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"myapp/internal/auth"
 	"myapp/internal/database"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,6 +14,7 @@ import (
 
 type Note struct {
 	NoteId      uuid.UUID `json:"note_id"`
+	UserId      uuid.UUID `json:"user_id"`
 	DailyNote   string    `json:"daily_note"`
 	CreatedAt   time.Time `json:"created_at"`
 	LastUpdated time.Time `json:"last_updated"`
@@ -22,8 +25,21 @@ func (config *Config) DashBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (config *Config) GetNotes(w http.ResponseWriter, r *http.Request) {
+	token, err := auth.GetBearerToken(r.Header)
 
-	DbNotes, err := config.DB.GetAllNotes(r.Context())
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	DbNotes, err := config.DB.GetAllNotes(r.Context(), OriginalUserId)
 
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Server Error")
@@ -44,6 +60,20 @@ func (config *Config) GetNotes(w http.ResponseWriter, r *http.Request) {
 
 func (config *Config) ReadNote(w http.ResponseWriter, r *http.Request) {
 
+	token, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
 	JsonNote := Note{}
 	id, err := uuid.Parse(r.PathValue("note_id"))
 	if err != nil {
@@ -62,16 +92,35 @@ func (config *Config) ReadNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if note.UserID != OriginalUserId {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
 	JsonNote.CreatedAt = note.CreatedAt
 	JsonNote.DailyNote = note.DailyNote
 	JsonNote.LastUpdated = note.UpdatedAt
 	JsonNote.NoteId = note.NoteID
+	JsonNote.UserId = OriginalUserId
 
 	RespondWithJson(w, http.StatusOK, JsonNote)
 }
 
 func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+	token, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
 	note := Note{}
 
 	decoder := json.NewDecoder(r.Body)
@@ -80,7 +129,10 @@ func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DbNote, err := config.DB.CreateNote(r.Context(), note.DailyNote)
+	DbNote, err := config.DB.CreateNote(r.Context(), database.CreateNoteParams{
+		UserID:    OriginalUserId,
+		DailyNote: note.DailyNote,
+	})
 
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Couldn't Add Note")
@@ -91,16 +143,48 @@ func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 	note.LastUpdated = DbNote.UpdatedAt
 	note.NoteId = DbNote.NoteID
 	note.DailyNote = DbNote.DailyNote
+	note.UserId = DbNote.UserID
 
 	RespondWithJson(w, http.StatusOK, note)
 }
 
 func (config *Config) DeleteNote(w http.ResponseWriter, r *http.Request) {
 
+	token, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
 	id, err := uuid.Parse(r.PathValue("note_id"))
 
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Invalid Note id")
+		return
+	}
+
+	note, err := config.DB.ReadNote(r.Context(), id)
+
+	if err == sql.ErrNoRows {
+		RespondWithError(w, http.StatusNotFound, "Couldn't find Note")
+		return
+	}
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	if note.UserID != OriginalUserId {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
 		return
 	}
 
@@ -118,12 +202,44 @@ func (config *Config) DeleteNote(w http.ResponseWriter, r *http.Request) {
 
 func (config *Config) UpdateNote(w http.ResponseWriter, r *http.Request) {
 
+	token, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
 	id, err := uuid.Parse(r.PathValue("note_id"))
 
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Invalid note id")
 		return
 	}
+
+	DBnote, err := config.DB.ReadNote(r.Context(), id)
+
+	if err == sql.ErrNoRows {
+		RespondWithError(w, http.StatusNotFound, "Couldn't find Note")
+		return
+	}
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	if DBnote.UserID != OriginalUserId {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
 	defer r.Body.Close()
 
 	note := Note{}
