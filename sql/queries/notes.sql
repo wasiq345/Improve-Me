@@ -1,6 +1,6 @@
 -- name: CreateNote :one
-INSERT INTO Notes (note_id, daily_note, created_at, updated_at) values (
-        gen_random_uuid(), $1, NOW(), NOW()
+INSERT INTO Notes (note_id, user_id, daily_note, created_at, updated_at) values (
+        gen_random_uuid(), $1, $2, NOW(), NOW()
 )
 RETURNING *;
 
@@ -19,4 +19,4 @@ RETURNING *;
 SELECT * FROM Notes WHERE note_id = $1;
 
 -- name: GetAllNotes :many
-SELECT * FROM Notes;
+SELECT * FROM Notes where user_id = $1;
