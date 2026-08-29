@@ -58,11 +58,14 @@ func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	PassHash, err := auth.GenerateHash(UserReq.Password)
-
+	//println("Hashing Error")
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Server Error")
 		return
 	}
+	// println("DataBase error")
+	// println("Password Hash: ", PassHash)
+	// println("User Email: ", UserReq.Email)
 	DBuser, err := config.DB.RegisterUser(r.Context(), database.RegisterUserParams{
 		Email:        UserReq.Email,
 		PasswordHash: PassHash,
@@ -70,9 +73,10 @@ func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		//println(err.Error())
 		return
 	}
-
+	//println("Not Database error")
 	UserResp := UserResponse{}
 
 	UserResp.Id = DBuser.ID

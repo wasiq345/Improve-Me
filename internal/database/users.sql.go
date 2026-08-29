@@ -11,7 +11,7 @@ import (
 
 const registerUser = `-- name: RegisterUser :one
 INSERT INTO Users (id, created_at, email, password_hash) values (
-    get_random_uuid(), NOW(), $1, $2
+    gen_random_uuid(), NOW(), $1, $2
 )
 RETURNING id, created_at, email, password_hash
 `

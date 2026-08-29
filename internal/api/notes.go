@@ -109,18 +109,19 @@ func (config *Config) ReadNote(w http.ResponseWriter, r *http.Request) {
 func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	token, err := auth.GetBearerToken(r.Header)
-
+	//println("Tokem isssue")
 	if err != nil {
 		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
 		return
 	}
 	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
-
+	//println("Validate jwt issue")
 	if err != nil {
 		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		//println(err.Error())
 		return
 	}
-
+	//println("passes")
 	note := Note{}
 
 	decoder := json.NewDecoder(r.Body)
