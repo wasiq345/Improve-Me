@@ -93,7 +93,7 @@ func (config *Config) ReadNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if note.UserID != OriginalUserId {
-		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		RespondWithError(w, http.StatusForbidden, "Not Allowed")
 		return
 	}
 
@@ -184,7 +184,7 @@ func (config *Config) DeleteNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if note.UserID != OriginalUserId {
-		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		RespondWithError(w, http.StatusForbidden, "Not Allowed")
 		return
 	}
 
@@ -236,7 +236,7 @@ func (config *Config) UpdateNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if DBnote.UserID != OriginalUserId {
-		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		RespondWithError(w, http.StatusForbidden, "Not Allowed")
 		return
 	}
 
