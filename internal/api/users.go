@@ -82,7 +82,7 @@ func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	UserResp.Id = DBuser.ID
 	UserResp.Email = DBuser.Email
 
-	RespondWithJson(w, http.StatusOK, UserResp)
+	RespondWithJson(w, http.StatusCreated, UserResp)
 }
 
 func (config *Config) LoginUser(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +96,7 @@ func (config *Config) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := ValidateCredentials(UserReq.Email, UserReq.Password); err != nil {
-		RespondWithJson(w, http.StatusBadRequest, err.Error())
+		RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
