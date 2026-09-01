@@ -28,7 +28,8 @@ func main() {
 	}
 
 	config := api.Config{
-		DB: dbQueries,
+		Users: dbQueries,
+		Notes: dbQueries,
 	}
 
 	config.RegisterRoutes(mux)
