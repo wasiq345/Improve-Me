@@ -66,7 +66,7 @@ func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	// println("DataBase error")
 	// println("Password Hash: ", PassHash)
 	// println("User Email: ", UserReq.Email)
-	DBuser, err := config.DB.RegisterUser(r.Context(), database.RegisterUserParams{
+	DBuser, err := config.Users.RegisterUser(r.Context(), database.RegisterUserParams{
 		Email:        UserReq.Email,
 		PasswordHash: PassHash,
 	})
@@ -100,7 +100,7 @@ func (config *Config) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DbUser, err := config.DB.SearchUserByEmail(r.Context(), UserReq.Email)
+	DbUser, err := config.Users.SearchUserByEmail(r.Context(), UserReq.Email)
 
 	if err == sql.ErrNoRows {
 		RespondWithError(w, http.StatusUnauthorized, "Invalid Email or Password")
@@ -134,7 +134,7 @@ func (config *Config) LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RefreshToken := auth.MakeRefreshToken()
-	_, err = config.DB.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
+	_, err = config.Users.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
 		Token:     RefreshToken,
 		ExpiresAt: time.Now().Add(60 * 24 * time.Hour),
 		RevokedAt: sql.NullTime{},

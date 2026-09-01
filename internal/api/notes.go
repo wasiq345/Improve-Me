@@ -39,7 +39,7 @@ func (config *Config) GetNotes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DbNotes, err := config.DB.GetAllNotes(r.Context(), OriginalUserId)
+	DbNotes, err := config.Notes.GetAllNotes(r.Context(), OriginalUserId)
 
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Server Error")
@@ -81,7 +81,7 @@ func (config *Config) ReadNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	note, err := config.DB.ReadNote(r.Context(), id)
+	note, err := config.Notes.ReadNote(r.Context(), id)
 	if err == sql.ErrNoRows {
 		RespondWithError(w, http.StatusNotFound, "Couldn't find Note")
 		return
@@ -130,7 +130,7 @@ func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DbNote, err := config.DB.CreateNote(r.Context(), database.CreateNoteParams{
+	DbNote, err := config.Notes.CreateNote(r.Context(), database.CreateNoteParams{
 		UserID:    OriginalUserId,
 		DailyNote: note.DailyNote,
 	})
@@ -172,7 +172,7 @@ func (config *Config) DeleteNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	note, err := config.DB.ReadNote(r.Context(), id)
+	note, err := config.Notes.ReadNote(r.Context(), id)
 
 	if err == sql.ErrNoRows {
 		RespondWithError(w, http.StatusNotFound, "Couldn't find Note")
@@ -189,7 +189,7 @@ func (config *Config) DeleteNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = config.DB.DeleteNote(r.Context(), id); err == sql.ErrNoRows {
+	if err = config.Notes.DeleteNote(r.Context(), id); err == sql.ErrNoRows {
 		RespondWithError(w, http.StatusNotFound, "Couldn't Find Note")
 		return
 	}
@@ -224,7 +224,7 @@ func (config *Config) UpdateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DBnote, err := config.DB.ReadNote(r.Context(), id)
+	DBnote, err := config.Notes.ReadNote(r.Context(), id)
 
 	if err == sql.ErrNoRows {
 		RespondWithError(w, http.StatusNotFound, "Couldn't find Note")
@@ -251,7 +251,7 @@ func (config *Config) UpdateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	DbNote, err := config.DB.UpdateNote(r.Context(), database.UpdateNoteParams{
+	DbNote, err := config.Notes.UpdateNote(r.Context(), database.UpdateNoteParams{
 		NoteID:    id,
 		DailyNote: note.DailyNote,
 	})

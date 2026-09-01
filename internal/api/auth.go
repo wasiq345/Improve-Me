@@ -16,7 +16,7 @@ func (apicfg *Config) Revoke(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = apicfg.DB.UpdateRefreshToken(r.Context(), refreshToken)
+	err = apicfg.Users.UpdateRefreshToken(r.Context(), refreshToken)
 
 	if err != nil {
 		RespondWithError(w, http.StatusUnauthorized, "Server Error")
@@ -34,7 +34,7 @@ func (apicfg *Config) Refresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Rtoken, err := apicfg.DB.GetRefreshToken(r.Context(), refreshToken)
+	Rtoken, err := apicfg.Users.GetRefreshToken(r.Context(), refreshToken)
 
 	if err == sql.ErrNoRows {
 		RespondWithError(w, http.StatusUnauthorized, "Invalid credentials")
