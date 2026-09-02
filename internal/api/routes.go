@@ -5,7 +5,9 @@ import (
 )
 
 func (config *Config) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/Dashboard", config.DashBoard)
+	//fileserver := http.FileServer(http.Dir("./frontend"))
+	//mux.Handle("/Dashboard/", http.StripPrefix("/Dashboard", fileserver))
+	mux.HandleFunc("GET /Dashboard", config.DashBoard)
 	mux.HandleFunc("GET /Dashboard/ReadNote/{note_id}", config.ReadNote)
 	mux.HandleFunc("DELETE /Dashboard/DeleteNote/{note_id}", config.DeleteNote)
 	mux.HandleFunc("PUT /Dashboard/UpdateNote/{note_id}", config.UpdateNote)
