@@ -24,7 +24,7 @@ func main() {
 	mux := http.NewServeMux()
 	server := &http.Server{
 		Addr:    ":" + port,
-		Handler: mux,
+		Handler: api.EnableCORS(mux),
 	}
 
 	config := api.Config{
