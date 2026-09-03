@@ -7,7 +7,7 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage('Loggin in...');
+        //setMessage('Loggin in...');
 
         try {
             const response = await fetch('http://localhost:8080/Dashboard/LoginUser', {
@@ -23,7 +23,7 @@ export default function Login() {
             if(response.ok) {
                 setMessage('Login Successful');
             } else {
-                setMessage(data.error);
+                setMessage('Invalid email or password');
             }
         } catch (error) {
             setMessage('Can not connect to the Server')
