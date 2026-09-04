@@ -29,8 +29,13 @@ type RefreshToken struct {
 }
 
 type User struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	Email        string
-	PasswordHash string
+	ID            uuid.UUID
+	CreatedAt     time.Time
+	Email         string
+	PasswordHash  string
+	Username      string
+	CurrentStreak int16
+	MaxStreak     int16
+	TotalNotes    int32
+	TodayCount    int32
 }

@@ -1,14 +1,15 @@
 import React, {useState} from "react";
+import {replace, useNavigate } from "react-router-dom";
 
 export default function Register() {
     const[email, setEmail] = useState('');
     const[password, setPassword] = useState('');
     const[message, setMessage] = useState('')
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('Registering ...')
-
 
         try {
             const response = await fetch('http://localhost:8080/Dashboard/RegisterUser', {
@@ -21,7 +22,8 @@ export default function Register() {
 
             const data = await response.json();
             if(response.ok) {
-                setMessage('Registration Successful');
+                //setMessage('Registration Successful');
+                navigate("/LoginUser", {replace: true})
             } else {
                 setMessage('Invalid email or password');
             }

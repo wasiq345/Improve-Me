@@ -14,12 +14,14 @@ import (
 )
 
 type UserRequest struct {
+	UserName string `json:"user_name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type UserLoginResponse struct {
 	Id           uuid.UUID `json:"id"`
+	UserName     string    `json:"user_name"`
 	Email        string    `json:"email"`
 	CreatedAt    time.Time `json:"created_at"`
 	AccessToken  string    `json:"access_token"`
@@ -27,8 +29,19 @@ type UserLoginResponse struct {
 }
 
 type UserResponse struct {
-	Id    uuid.UUID `json:"id"`
-	Email string    `json:"email"`
+	Id       uuid.UUID `json:"id"`
+	Email    string    `json:"email"`
+	UserName string    `json:"user_name"`
+}
+
+type UserProfile struct {
+	UserName      string `json:"user_name"`
+	Email         string `json:"email"`
+	CurrentStreak uint16 `json:"current_streak"`
+	MaxStreak     uint16 `json:"max_streak"`
+	TotalNotes    int    `json:"total_notes"`
+	TodayNotes    int    `json:"today_notes"`
+	Notes         []Note `json:"notes"`
 }
 
 func ValidateCredentials(Email string, Password string) error {
@@ -40,6 +53,63 @@ func ValidateCredentials(Email string, Password string) error {
 		return errors.New("Password Should be 6 Characters Long")
 	}
 	return nil
+}
+
+func (config *Config) UserProfile(w http.ResponseWriter, r *http.Request) {
+	token, err := auth.GetBearerToken(r.Header)
+
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	OriginalUserId, err := auth.ValidateJWT(token, os.Getenv("JWT_SECRET"))
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+	UserName := r.PathValue("username")
+	DbUser, err := config.Users.SearchUserByUserName(r.Context(), UserName)
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Not authorized")
+		return
+	}
+
+	if DbUser.ID != OriginalUserId {
+		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
+		return
+	}
+
+	DbNotes, err := config.Notes.GetSortedNotes(r.Context(), OriginalUserId)
+	notes := make([]Note, 0, min(3, len(DbNotes)))
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server error")
+		return
+	}
+
+	for i := 0; i < 3; i++ {
+		if i < len(DbNotes) {
+			notes = append(notes, Note{
+				NoteId:      DbNotes[i].NoteID,
+				CreatedAt:   DbNotes[i].CreatedAt,
+				LastUpdated: DbNotes[i].UpdatedAt,
+				DailyNote:   DbNotes[i].DailyNote,
+			})
+		}
+	}
+
+	UserProfile := UserProfile{
+		Email:         DbUser.Email,
+		UserName:      DbUser.Username,
+		CurrentStreak: uint16(DbUser.CurrentStreak),
+		MaxStreak:     uint16(DbUser.MaxStreak),
+		TotalNotes:    int(DbUser.TotalNotes),
+		TodayNotes:    int(DbUser.TodayCount),
+		Notes:         notes,
+	}
+
+	RespondWithJson(w, http.StatusOK, UserProfile)
 }
 
 func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +139,7 @@ func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	DBuser, err := config.Users.RegisterUser(r.Context(), database.RegisterUserParams{
 		Email:        UserReq.Email,
 		PasswordHash: PassHash,
+		Username:     UserReq.UserName,
 	})
 
 	if err != nil {
@@ -81,6 +152,7 @@ func (config *Config) RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	UserResp.Id = DBuser.ID
 	UserResp.Email = DBuser.Email
+	UserResp.UserName = DBuser.Username
 
 	RespondWithJson(w, http.StatusCreated, UserResp)
 }
@@ -148,6 +220,7 @@ func (config *Config) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	UserLogResp := UserLoginResponse{
 		Id:           DbUser.ID,
+		UserName:     DbUser.Username,
 		Email:        DbUser.Email,
 		CreatedAt:    DbUser.CreatedAt,
 		AccessToken:  token,

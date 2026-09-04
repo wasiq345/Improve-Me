@@ -19,11 +19,12 @@ import (
 )
 
 type fakeNoteStore struct {
-	createNoteFunc  func(ctx context.Context, arg database.CreateNoteParams) (database.Note, error)
-	deleteNoteFunc  func(ctx context.Context, noteId uuid.UUID) error
-	getAllNotesFunc func(ctx context.Context, userId uuid.UUID) ([]database.Note, error)
-	readNoteFunc    func(ctx context.Context, noteId uuid.UUID) (database.Note, error)
-	updateNoteFunc  func(ctx context.Context, arg database.UpdateNoteParams) (database.Note, error)
+	createNoteFunc     func(ctx context.Context, arg database.CreateNoteParams) (database.Note, error)
+	deleteNoteFunc     func(ctx context.Context, noteId uuid.UUID) error
+	getAllNotesFunc    func(ctx context.Context, userId uuid.UUID) ([]database.Note, error)
+	readNoteFunc       func(ctx context.Context, noteId uuid.UUID) (database.Note, error)
+	updateNoteFunc     func(ctx context.Context, arg database.UpdateNoteParams) (database.Note, error)
+	getSortedNotesFunc func(ctx context.Context, userId uuid.UUID) ([]database.Note, error)
 }
 
 func (f *fakeNoteStore) CreateNote(ctx context.Context, arg database.CreateNoteParams) (database.Note, error) {
@@ -40,6 +41,10 @@ func (f *fakeNoteStore) ReadNote(ctx context.Context, noteId uuid.UUID) (databas
 }
 func (f *fakeNoteStore) UpdateNote(ctx context.Context, arg database.UpdateNoteParams) (database.Note, error) {
 	return f.updateNoteFunc(ctx, arg)
+}
+
+func (f *fakeNoteStore) GetSortedNotes(ctx context.Context, userId uuid.UUID) ([]database.Note, error) {
+	return f.getSortedNotesFunc(ctx, userId)
 }
 
 func newAuthedRequest(t *testing.T, method, path string, userID uuid.UUID, body any) *http.Request {

@@ -20,10 +20,6 @@ type Note struct {
 	LastUpdated time.Time `json:"last_updated"`
 }
 
-func (config *Config) DashBoard(w http.ResponseWriter, r *http.Request) {
-	RespondWithJson(w, http.StatusOK, "Welcome To DashBoard")
-}
-
 func (config *Config) GetNotes(w http.ResponseWriter, r *http.Request) {
 	token, err := auth.GetBearerToken(r.Header)
 

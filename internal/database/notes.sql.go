@@ -79,6 +79,39 @@ func (q *Queries) GetAllNotes(ctx context.Context, userID uuid.UUID) ([]Note, er
 	return items, nil
 }
 
+const getSortedNotes = `-- name: GetSortedNotes :many
+SELECT note_id, daily_note, created_at, updated_at, user_id FROM Notes WHERE user_id = $1 ORDER BY created_at DESC
+`
+
+func (q *Queries) GetSortedNotes(ctx context.Context, userID uuid.UUID) ([]Note, error) {
+	rows, err := q.db.QueryContext(ctx, getSortedNotes, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Note
+	for rows.Next() {
+		var i Note
+		if err := rows.Scan(
+			&i.NoteID,
+			&i.DailyNote,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const readNote = `-- name: ReadNote :one
 SELECT note_id, daily_note, created_at, updated_at, user_id FROM Notes WHERE note_id = $1
 `

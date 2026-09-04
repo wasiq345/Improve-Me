@@ -24,11 +24,12 @@ func TestMain(m *testing.M) {
 }
 
 type fakeUserStore struct {
-	registerUserFunc       func(ctx context.Context, arg database.RegisterUserParams) (database.User, error)
-	searchUserByEmailFunc  func(ctx context.Context, email string) (database.User, error)
-	createRefreshTokenFunc func(ctx context.Context, arg database.CreateRefreshTokenParams) (database.RefreshToken, error)
-	getRefreshTokenFunc    func(ctx context.Context, token string) (database.RefreshToken, error)
-	updateRefreshTokenFunc func(ctx context.Context, token string) error
+	registerUserFunc         func(ctx context.Context, arg database.RegisterUserParams) (database.User, error)
+	searchUserByEmailFunc    func(ctx context.Context, email string) (database.User, error)
+	searchUserByUserNameFunc func(ctx context.Context, username string) (database.User, error)
+	createRefreshTokenFunc   func(ctx context.Context, arg database.CreateRefreshTokenParams) (database.RefreshToken, error)
+	getRefreshTokenFunc      func(ctx context.Context, token string) (database.RefreshToken, error)
+	updateRefreshTokenFunc   func(ctx context.Context, token string) error
 }
 
 func (f *fakeUserStore) RegisterUser(ctx context.Context, arg database.RegisterUserParams) (database.User, error) {
@@ -37,6 +38,10 @@ func (f *fakeUserStore) RegisterUser(ctx context.Context, arg database.RegisterU
 
 func (f *fakeUserStore) SearchUserByEmail(ctx context.Context, email string) (database.User, error) {
 	return f.searchUserByEmailFunc(ctx, email)
+}
+
+func (f *fakeUserStore) SearchUserByUserName(ctx context.Context, email string) (database.User, error) {
+	return f.searchUserByUserNameFunc(ctx, email)
 }
 
 func (f *fakeUserStore) CreateRefreshToken(ctx context.Context, arg database.CreateRefreshTokenParams) (database.RefreshToken, error) {

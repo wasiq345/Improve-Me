@@ -1,13 +1,15 @@
 import React, {useState} from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const[password, setPassword] = useState('')
     const[message, setMessage] = useState('')
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //setMessage('Loggin in...');
+        //setMessage('Loggin in...') ;
 
         try {
             const response = await fetch('http://localhost:8080/Dashboard/LoginUser', {
@@ -21,7 +23,9 @@ export default function Login() {
             const data = await response.json();
 
             if(response.ok) {
-                setMessage('Login Successful');
+                //setMessage('Login Successful');
+                localStorage.setItem("accessToken", data.access_token);
+                navigate("/Profile", {replace: true});
             } else {
                 setMessage('Invalid email or password');
             }

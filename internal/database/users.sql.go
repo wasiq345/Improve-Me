@@ -10,31 +10,37 @@ import (
 )
 
 const registerUser = `-- name: RegisterUser :one
-INSERT INTO Users (id, created_at, email, password_hash) values (
-    gen_random_uuid(), NOW(), $1, $2
+INSERT INTO Users (id, created_at, username, email, password_hash) values (
+    gen_random_uuid(), NOW(), $1, $2, $3
 )
-RETURNING id, created_at, email, password_hash
+RETURNING id, created_at, email, password_hash, username, current_streak, max_streak, total_notes, today_count
 `
 
 type RegisterUserParams struct {
+	Username     string
 	Email        string
 	PasswordHash string
 }
 
 func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, registerUser, arg.Email, arg.PasswordHash)
+	row := q.db.QueryRowContext(ctx, registerUser, arg.Username, arg.Email, arg.PasswordHash)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.Email,
 		&i.PasswordHash,
+		&i.Username,
+		&i.CurrentStreak,
+		&i.MaxStreak,
+		&i.TotalNotes,
+		&i.TodayCount,
 	)
 	return i, err
 }
 
 const searchUserByEmail = `-- name: SearchUserByEmail :one
-SELECT id, created_at, email, password_hash FROM Users where email = $1
+SELECT id, created_at, email, password_hash, username, current_streak, max_streak, total_notes, today_count FROM Users where email = $1
 `
 
 func (q *Queries) SearchUserByEmail(ctx context.Context, email string) (User, error) {
@@ -45,6 +51,32 @@ func (q *Queries) SearchUserByEmail(ctx context.Context, email string) (User, er
 		&i.CreatedAt,
 		&i.Email,
 		&i.PasswordHash,
+		&i.Username,
+		&i.CurrentStreak,
+		&i.MaxStreak,
+		&i.TotalNotes,
+		&i.TodayCount,
+	)
+	return i, err
+}
+
+const searchUserByUserName = `-- name: SearchUserByUserName :one
+SELECT id, created_at, email, password_hash, username, current_streak, max_streak, total_notes, today_count FROM Users where username = $1
+`
+
+func (q *Queries) SearchUserByUserName(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, searchUserByUserName, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.Email,
+		&i.PasswordHash,
+		&i.Username,
+		&i.CurrentStreak,
+		&i.MaxStreak,
+		&i.TotalNotes,
+		&i.TodayCount,
 	)
 	return i, err
 }

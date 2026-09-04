@@ -10,6 +10,7 @@ import (
 type UserStore interface {
 	RegisterUser(ctx context.Context, arg database.RegisterUserParams) (database.User, error)
 	SearchUserByEmail(ctx context.Context, email string) (database.User, error)
+	SearchUserByUserName(ctx context.Context, username string) (database.User, error)
 	CreateRefreshToken(ctx context.Context, arg database.CreateRefreshTokenParams) (database.RefreshToken, error)
 	GetRefreshToken(ctx context.Context, token string) (database.RefreshToken, error)
 	UpdateRefreshToken(ctx context.Context, token string) error
@@ -21,4 +22,5 @@ type NoteStore interface {
 	GetAllNotes(ctx context.Context, userId uuid.UUID) ([]database.Note, error)
 	ReadNote(ctx context.Context, noteId uuid.UUID) (database.Note, error)
 	UpdateNote(ctx context.Context, arg database.UpdateNoteParams) (database.Note, error)
+	GetSortedNotes(ctx context.Context, userId uuid.UUID) ([]database.Note, error)
 }

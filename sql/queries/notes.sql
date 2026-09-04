@@ -20,3 +20,6 @@ SELECT * FROM Notes WHERE note_id = $1;
 
 -- name: GetAllNotes :many
 SELECT * FROM Notes where user_id = $1;
+
+-- name: GetSortedNotes :many
+SELECT * FROM Notes WHERE user_id = $1 ORDER BY created_at DESC;
