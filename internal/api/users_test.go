@@ -30,6 +30,26 @@ type fakeUserStore struct {
 	createRefreshTokenFunc   func(ctx context.Context, arg database.CreateRefreshTokenParams) (database.RefreshToken, error)
 	getRefreshTokenFunc      func(ctx context.Context, token string) (database.RefreshToken, error)
 	updateRefreshTokenFunc   func(ctx context.Context, token string) error
+	resetDailyCountFunc      func(ctx context.Context) error
+	increaseNoteCountFunc    func(ctx context.Context, id uuid.UUID) error
+	updateStreakFunc         func(ctx context.Context, id uuid.UUID) error
+	resetCurrentStreakFunc   func(ctx context.Context, id uuid.UUID) error
+}
+
+func (f *fakeUserStore) ResetCurrentStreak(ctx context.Context, id uuid.UUID) error {
+	return f.resetCurrentStreakFunc(ctx, id)
+}
+
+func (f *fakeUserStore) UpdateStreak(ctx context.Context, id uuid.UUID) error {
+	return f.updateStreakFunc(ctx, id)
+}
+
+func (f *fakeUserStore) IncreaseNoteCount(ctx context.Context, id uuid.UUID) error {
+	return f.increaseNoteCountFunc(ctx, id)
+}
+
+func (f *fakeUserStore) ResetDailyCount(ctx context.Context) error {
+	return f.resetDailyCountFunc(ctx)
 }
 
 func (f *fakeUserStore) RegisterUser(ctx context.Context, arg database.RegisterUserParams) (database.User, error) {

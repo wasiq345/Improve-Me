@@ -20,6 +20,27 @@ type Note struct {
 	LastUpdated time.Time `json:"last_updated"`
 }
 
+func isConsectiveDay(prev time.Time, curr time.Time) bool {
+	prev = prev.UTC()
+	curr = curr.UTC()
+
+	prevDate := time.Date(
+		prev.Year(), prev.Month(), prev.Day(), 0, 0, 0, 0, time.UTC,
+	)
+
+	currDate := time.Date(
+		curr.Year(), curr.Month(), curr.Day(), 0, 0, 0, 0, time.UTC,
+	)
+
+	return currDate.Equal(prevDate.AddDate(0, 0, 1))
+}
+
+func isSameDay(x time.Time, y time.Time) bool {
+	x = x.UTC()
+	y = y.UTC()
+	return x.Year() == y.Year() && x.YearDay() == y.YearDay()
+}
+
 func (config *Config) GetNotes(w http.ResponseWriter, r *http.Request) {
 	token, err := auth.GetBearerToken(r.Header)
 
@@ -142,6 +163,38 @@ func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 	note.DailyNote = DbNote.DailyNote
 	note.UserId = DbNote.UserID
 
+	notes, err := config.Notes.GetSortedNotes(r.Context(), OriginalUserId)
+
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	if len(notes) == 1 {
+		if err := config.Users.UpdateStreak(r.Context(), OriginalUserId); err != nil {
+			RespondWithError(w, http.StatusInternalServerError, "Server Error")
+			return
+		}
+	} else {
+		RecentNote := notes[1]
+		consecutive := isConsectiveDay(RecentNote.CreatedAt, note.CreatedAt)
+		if consecutive {
+			if err := config.Users.UpdateStreak(r.Context(), OriginalUserId); err != nil {
+				RespondWithError(w, http.StatusInternalServerError, "Server error")
+				return
+			}
+		} else if !isSameDay(RecentNote.CreatedAt, note.CreatedAt) {
+			if err := config.Users.ResetCurrentStreak(r.Context(), OriginalUserId); err != nil {
+				RespondWithError(w, http.StatusInternalServerError, "Server Error")
+				return
+			}
+		}
+	}
+
+	if err := config.Users.IncreaseNoteCount(r.Context(), OriginalUserId); err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		return
+	}
 	RespondWithJson(w, http.StatusOK, note)
 }
 

@@ -81,7 +81,7 @@ func (config *Config) UserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	DbNotes, err := config.Notes.GetSortedNotes(r.Context(), OriginalUserId)
-	notes := make([]Note, 0, min(3, len(DbNotes)))
+	notes := make([]Note, 0)
 
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Server error")

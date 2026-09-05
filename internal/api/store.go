@@ -14,6 +14,10 @@ type UserStore interface {
 	CreateRefreshToken(ctx context.Context, arg database.CreateRefreshTokenParams) (database.RefreshToken, error)
 	GetRefreshToken(ctx context.Context, token string) (database.RefreshToken, error)
 	UpdateRefreshToken(ctx context.Context, token string) error
+	ResetDailyCount(ctx context.Context) error
+	IncreaseNoteCount(ctx context.Context, id uuid.UUID) error
+	UpdateStreak(ctx context.Context, id uuid.UUID) error
+	ResetCurrentStreak(ctx context.Context, id uuid.UUID) error
 }
 
 type NoteStore interface {

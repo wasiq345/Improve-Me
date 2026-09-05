@@ -80,7 +80,7 @@ func (q *Queries) GetAllNotes(ctx context.Context, userID uuid.UUID) ([]Note, er
 }
 
 const getSortedNotes = `-- name: GetSortedNotes :many
-SELECT note_id, daily_note, created_at, updated_at, user_id FROM Notes WHERE user_id = $1 ORDER BY created_at DESC
+SELECT note_id, daily_note, created_at, updated_at, user_id FROM Notes WHERE user_id = $1 ORDER BY created_at DESC LIMIT 3
 `
 
 func (q *Queries) GetSortedNotes(ctx context.Context, userID uuid.UUID) ([]Note, error) {

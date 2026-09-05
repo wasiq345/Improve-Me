@@ -7,7 +7,18 @@ package database
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
+
+const increaseNoteCount = `-- name: IncreaseNoteCount :exec
+UPDATE Users SET today_count = today_count + 1, total_notes = total_notes + 1 where id = $1
+`
+
+func (q *Queries) IncreaseNoteCount(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, increaseNoteCount, id)
+	return err
+}
 
 const registerUser = `-- name: RegisterUser :one
 INSERT INTO Users (id, created_at, username, email, password_hash) values (
@@ -37,6 +48,24 @@ func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) (Use
 		&i.TodayCount,
 	)
 	return i, err
+}
+
+const resetCurrentStreak = `-- name: ResetCurrentStreak :exec
+UPDATE Users SET current_streak = 1 WHERE id = $1
+`
+
+func (q *Queries) ResetCurrentStreak(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, resetCurrentStreak, id)
+	return err
+}
+
+const resetDailyCount = `-- name: ResetDailyCount :exec
+UPDATE Users SET today_count = 0
+`
+
+func (q *Queries) ResetDailyCount(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, resetDailyCount)
+	return err
 }
 
 const searchUserByEmail = `-- name: SearchUserByEmail :one
@@ -79,4 +108,13 @@ func (q *Queries) SearchUserByUserName(ctx context.Context, username string) (Us
 		&i.TodayCount,
 	)
 	return i, err
+}
+
+const updateStreak = `-- name: UpdateStreak :exec
+UPDATE Users SET current_streak = current_streak + 1, max_streak = GREATEST(max_streak, current_streak + 1) WHERE id = $1
+`
+
+func (q *Queries) UpdateStreak(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, updateStreak, id)
+	return err
 }
