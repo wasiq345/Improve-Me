@@ -63,13 +63,11 @@ func GetBearerToken(headers http.Header) (string, error) {
 	if TokenString == "" {
 		return "", errors.New("Server Error")
 	}
-
 	Token, found := strings.CutPrefix(TokenString, "Bearer ")
 
 	if !found {
 		return "", errors.New("Authorization Header must start with bearer")
 	}
-
 	return Token, nil
 }
 

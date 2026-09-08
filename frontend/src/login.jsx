@@ -24,6 +24,8 @@ export default function Login() {
 
             if(response.ok) {
                 //setMessage('Login Successful');
+                localStorage.setItem("username", data.user_name)
+                localStorage.setItem("email", email)
                 localStorage.setItem("accessToken", data.access_token);
                 navigate("/Profile", {replace: true});
             } else {
