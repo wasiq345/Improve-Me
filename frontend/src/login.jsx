@@ -27,7 +27,7 @@ export default function Login() {
                 localStorage.setItem("username", data.user_name)
                 localStorage.setItem("email", email)
                 localStorage.setItem("accessToken", data.access_token);
-                navigate("/Profile", {replace: true});
+                navigate(`/Profile/${data.user_name}`, {replace: true});
             } else {
                 setMessage('Invalid email or password');
             }

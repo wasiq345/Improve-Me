@@ -14,7 +14,7 @@ export default function App() {
         <Route path='/LoginUser' element={<Login />} />
         <Route path='/RegisterUser' element={<Register />} />
         <Route 
-          path='/Profile' 
+          path='/Profile/:username' 
             element={
               <ProtectedRoute>
                 <Profile />

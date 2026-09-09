@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
+import { useParams } from "react-router-dom";
 
 export default function Profile() {
     const [profile, setProfile] = useState(null);
     const [error, setError] = useState(null);
-    const username = localStorage.getItem("username");
+    const {username} = useParams(); 
      const token = localStorage.getItem("accessToken");
     useEffect(() => {
         const fetchProfileData = async (e) => {
@@ -86,4 +87,4 @@ export default function Profile() {
         </div>
     </div>
 );
-}
+}``
