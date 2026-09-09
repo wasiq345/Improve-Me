@@ -67,9 +67,9 @@ export default function Profile() {
         <div className="latest-notes">
             <h2>Your Latest Notes</h2>
 
-            {profile.Notes && profile.Notes.length > 0 ? (
+            {profile.notes && profile.notes.length > 0 ? (
                 <ul className="notes-list">
-                    {profile.Notes.map((note) => (
+                    {profile.notes.map((note) => (
                         <li key={note.note_id} className="note-item">
                             <p>{note.daily_note}</p>
 
