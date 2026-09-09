@@ -83,3 +83,50 @@ button {
 .no-notes {
     color: #888;
 }
+
+.notes-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.note-card {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.note-text {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+}
+
+.note-date {
+    color: #888;
+}
+
+.no-notes {
+    color: #888;
+}
+
+.error-message {
+    color: red;
+}
+
+.all-notes-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+}

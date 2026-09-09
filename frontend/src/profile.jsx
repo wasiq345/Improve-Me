@@ -64,6 +64,7 @@ export default function Profile() {
             </div>
         </div>
 
+
         <div className="latest-notes">
             <h2>Your Latest Notes</h2>
 
@@ -85,6 +86,15 @@ export default function Profile() {
                 </p>
             )}
         </div>
+
+        <div className="All-notes">
+             <button
+                className="all-notes-btn"
+                onClick={() => window.location.href = `/Profile/${username}/GetNotes`}
+            >
+             View All Notes
+            </button>
+</div>
     </div>
 );
 }``

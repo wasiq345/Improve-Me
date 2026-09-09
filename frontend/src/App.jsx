@@ -6,6 +6,7 @@ import Register from './register'
 import Profile from './profile'
 import ProtectedRoute from './protected_route'
 import CreateNote from './create_note'
+import GetNotes from './get_notes'
 
 export default function App() {
   return (
@@ -27,6 +28,13 @@ export default function App() {
               <ProtectedRoute>
                 <CreateNote />
               </ProtectedRoute>
+            } />
+          <Route 
+            path='/Profile/:username/GetNotes' 
+              element={
+                <ProtectedRoute>
+                  <GetNotes />
+                </ProtectedRoute>
             } />
       </Routes>
     </Router>
