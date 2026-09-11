@@ -140,3 +140,74 @@ button {
     background-color: #f0f0f0; 
     cursor: pointer;
 }
+
+/* Note view text wrapper styling */
+.note-content {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+/* Edit Mode Form and Layout Elements */
+.edit-note-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.edit-note-textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    box-sizing: border-box; /* Ensures padding doesn't cause overflow box sizing issues */
+    resize: vertical;       /* Allows user to stretch height box only */
+}
+
+.edit-form-actions {
+    display: flex;
+    margin-top: 10px;
+    gap: 10px;              /* Clean layout separation between action items without using margins */
+}
+
+/* Reusable Button Blueprint Layout Elements */
+.btn {
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-edit {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
