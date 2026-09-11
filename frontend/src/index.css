@@ -130,3 +130,13 @@ button {
     text-decoration: none;
     cursor: pointer;
 }
+
+.note-card-link {
+    text-decoration: none; 
+    color: #333333;      
+}
+
+.note-card-link:hover .note-card {
+    background-color: #f0f0f0; 
+    cursor: pointer;
+}

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function GetNotes() {
     const [notes, setNotes] = useState([]);
     const [error, setError] = useState('');
     const token = localStorage.getItem("accessToken");
-    const {username} = useParams();
+    const { username } = useParams();
     const fetchGetNotes = async (e) => {
         try {
             const response = await fetch(`http://localhost:8080/Profile/${username}/GetNotes`, {
@@ -34,11 +34,14 @@ export default function GetNotes() {
             {notes.length > 0 ? (
                 <div className="notes-list">
                     {notes.map((note) => (
-                        <div key={note.note_id} className="note-card" >
-                            <p className="note-text"> {note.daily_note} </p>
-                            <small className="note-date"> {note.created_at} </small>
-                        </div>))}
-                </div>) :
+                        <Link to={`/Profile/${username}/ReadNote/${note.note_id}`} key={note.note_id} className="note-card-link">
+                            <div key={note.note_id} className="note-card" >
+                                <p className="note-text"> {note.daily_note} </p>
+                                <small className="note-date"> {new Date(note.created_at).toLocaleString()} </small>
+                            </div>
+                        </Link>
+                    ))}    
+                </div>):
                 (!error && (
                     <p className="no-notes">
                         You haven't written any notes yet!

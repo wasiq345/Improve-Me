@@ -75,7 +75,7 @@ export default function Profile() {
                             <p>{note.daily_note}</p>
 
                             <small className="note-date">
-                                {note.created_at || 'Just now'}
+                                {new Date(note.created_at).toLocaleString() || 'Just now'}
                             </small>
                         </li>
                     ))}
