@@ -199,10 +199,9 @@ func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 }
 
 func (config *Config) DeleteNote(w http.ResponseWriter, r *http.Request) {
-
 	token, err := auth.GetBearerToken(r.Header)
-
 	if err != nil {
+		println(err.Error())
 		RespondWithError(w, http.StatusUnauthorized, "Not Authorized")
 		return
 	}

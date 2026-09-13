@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useParams, useSearchParams } from "react-router-dom"
+import { replace, useParams, useSearchParams, useNavigate } from "react-router-dom"
 
 export default function ReadNote() {
     const [error, setError] = useState('');
@@ -8,6 +8,8 @@ export default function ReadNote() {
     const { username, noteId } = useParams();
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState('');
+    const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const fetchReadNote = async (e) => {
         try {
@@ -54,10 +56,33 @@ export default function ReadNote() {
         }
     };
 
+    const fetchDeleteNote = async (e) => {
+        e.preventDefault();
+        if (!window.confirm("Do you want to delete this note permanently?")) {
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:8080/Profile/${username}/DeleteNote/${noteId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                setMessage('Note Delete Successfully');
+                navigate(`/Profile/${username}`, {replace: true});
+            } else setError('Failed To Delete Note')
+        } catch (err) {
+            setError('Failed to Connect to server')
+        }
+    };
+
     useEffect(() => { fetchReadNote(); }, []);
     if (!note) {
         return <div className="loading">Loading note...</div>;
     }
+
 
     return (
         <div className="read-note">
@@ -87,7 +112,8 @@ export default function ReadNote() {
                         <div className="note-content">
                             {note.daily_note}
                         </div>
-                        <button className="btn btn-edit" onClick={()=>{setEditText(note.daily_note); setIsEditing(true);}}>Edit Note</button>
+                        <button className="btn btn-edit" onClick={() => { setEditText(note.daily_note); setIsEditing(true); }}>Edit Note</button>
+                        <button className="btn btn-delete" onClick={fetchDeleteNote}>Delete Note</button>
                     </div>
                 )}
             </div>

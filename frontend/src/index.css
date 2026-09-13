@@ -211,3 +211,13 @@ button {
     background-color: #5a6268;
 }
 
+
+.btn-delete {
+    background-color: #dc3545; /* Clean alert red */
+    color: #ffffff;
+    margin-left: 10px;        /* Spacing separating it from the edit button */
+}
+
+.btn-delete:hover {
+    background-color: #bd2130;
+}
