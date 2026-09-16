@@ -23,3 +23,6 @@ UPDATE Users SET current_streak = current_streak + 1, max_streak = GREATEST(max_
 
 -- name: ResetCurrentStreak :exec
 UPDATE Users SET current_streak = 1 WHERE id = $1;
+
+-- name: GetDailyCount :one
+SELECT today_count FROM Users WHERE id = $1;

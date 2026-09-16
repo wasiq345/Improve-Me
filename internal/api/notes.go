@@ -170,12 +170,18 @@ func (config *Config) AddNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(notes) == 1 {
+	dailyCount, err := config.Users.GetDailyCount(r.Context(), OriginalUserId)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Server Error")
+		return
+	}
+
+	if len(notes) == 1 && dailyCount < 1 {
 		if err := config.Users.UpdateStreak(r.Context(), OriginalUserId); err != nil {
 			RespondWithError(w, http.StatusInternalServerError, "Server Error")
 			return
 		}
-	} else {
+	} else if len(notes) > 1 {
 		RecentNote := notes[1]
 		consecutive := isConsectiveDay(RecentNote.CreatedAt, note.CreatedAt)
 		if consecutive {

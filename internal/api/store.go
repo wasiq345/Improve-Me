@@ -18,6 +18,7 @@ type UserStore interface {
 	IncreaseNoteCount(ctx context.Context, id uuid.UUID) error
 	UpdateStreak(ctx context.Context, id uuid.UUID) error
 	ResetCurrentStreak(ctx context.Context, id uuid.UUID) error
+	GetDailyCount(ctx context.Context, id uuid.UUID) (int32, error)
 }
 
 type NoteStore interface {

@@ -11,6 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
+const getDailyCount = `-- name: GetDailyCount :one
+SELECT today_count FROM Users WHERE id = $1
+`
+
+func (q *Queries) GetDailyCount(ctx context.Context, id uuid.UUID) (int32, error) {
+	row := q.db.QueryRowContext(ctx, getDailyCount, id)
+	var today_count int32
+	err := row.Scan(&today_count)
+	return today_count, err
+}
+
 const increaseNoteCount = `-- name: IncreaseNoteCount :exec
 UPDATE Users SET today_count = today_count + 1, total_notes = total_notes + 1 where id = $1
 `

@@ -34,6 +34,11 @@ type fakeUserStore struct {
 	increaseNoteCountFunc    func(ctx context.Context, id uuid.UUID) error
 	updateStreakFunc         func(ctx context.Context, id uuid.UUID) error
 	resetCurrentStreakFunc   func(ctx context.Context, id uuid.UUID) error
+	getDailyCountFunc        func(ctx context.Context, id uuid.UUID) (int32, error)
+}
+
+func (f *fakeUserStore) GetDailyCount(ctx context.Context, id uuid.UUID) (int32, error) {
+	return f.getDailyCountFunc(ctx, id)
 }
 
 func (f *fakeUserStore) ResetCurrentStreak(ctx context.Context, id uuid.UUID) error {
