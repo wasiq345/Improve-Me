@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for improving MyLife. Keep changes focused, explain behavior changes, and include tests where the change affects the API or persistence layer.
+Thanks for improving Improve-Me. Keep changes focused, explain behavior changes, and include tests where the change affects the API or persistence layer.
 
 ## Where changes belong
 

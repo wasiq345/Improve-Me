@@ -1,6 +1,6 @@
-# MyLife Documentation
+# Improve-Me Documentation
 
-MyLife is a daily-notes application with a Go HTTP API, a React/Vite frontend, and PostgreSQL persistence.
+Improve-Me is a daily-notes application with a Go HTTP API, a React/Vite frontend, and PostgreSQL persistence.
 
 ## Documents
 
