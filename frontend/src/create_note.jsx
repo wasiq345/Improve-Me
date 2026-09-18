@@ -35,7 +35,7 @@ export default function CreateNote() {
     };
 
     return (
-        <div> className="create-note-container"
+        <div className="create-note-container">
             <h1>Daily Note</h1>
 
             <form onSubmit={handleSubmit}>
