@@ -241,8 +241,22 @@ func TestAddNote_Success(t *testing.T) {
 				DailyNote: arg.DailyNote,
 			}, nil
 		},
+		getSortedNotesFunc: func(ctx context.Context, id uuid.UUID) ([]database.Note, error) {
+			return []database.Note{{NoteID: noteID, UserID: id}}, nil
+		},
 	}
-	config := &Config{Notes: store}
+	userStore := &fakeUserStore{
+		getDailyCountFunc: func(ctx context.Context, id uuid.UUID) (int32, error) {
+			return 0, nil
+		},
+		updateStreakFunc: func(ctx context.Context, id uuid.UUID) error {
+			return nil
+		},
+		increaseNoteCountFunc: func(ctx context.Context, id uuid.UUID) error {
+			return nil
+		},
+	}
+	config := &Config{Notes: store, Users: userStore}
 
 	req := newAuthedRequest(t, http.MethodPost, "/notes", userID, Note{
 		DailyNote: "gym then leetcode",
