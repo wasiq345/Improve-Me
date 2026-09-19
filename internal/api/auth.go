@@ -40,6 +40,10 @@ func (apicfg *Config) Refresh(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusUnauthorized, "Invalid credentials")
 		return
 	}
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "DataBase error")
+		return
+	}
 	if Rtoken.ExpiresAt.Before(time.Now()) {
 		RespondWithError(w, http.StatusUnauthorized, "Invalid credentials")
 		return
@@ -48,9 +52,7 @@ func (apicfg *Config) Refresh(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusUnauthorized, "Invalid credentials")
 		return
 	}
-	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, "DataBase error")
-	}
+
 	jwt, err := auth.MakeJWT(Rtoken.Userid, os.Getenv("JWT_SECRET"), time.Hour)
 
 	if err != nil {
