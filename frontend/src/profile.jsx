@@ -1,30 +1,69 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom";
+import { apiFetch } from "./api_fetch";
 
 export default function Profile() {
     const [profile, setProfile] = useState(null);
     const [error, setError] = useState(null);
     const { username } = useParams();
     const navigate = useNavigate();
-    const token = localStorage.getItem("accessToken");
+    // const token = localStorage.getItem("accessToken");
+    // const refreshToken = localStorage.getItem("refreshToken");
     useEffect(() => {
         const fetchProfileData = async (e) => {
             try {
-                const response = await fetch(`http://localhost:8080/Profile/${username}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                // const response = await fetch(`http://localhost:8080/Profile/${username}`, {
+                //     method: 'GET',
+                //     headers: {
+                //         'Authorization': `Bearer ${token}`,
+                //         'Content-Type': 'application/json'
+                //     }
+                // });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setProfile(data);
-                } else {
-                    setError("Failed to fetch profile details");
-                    console.error("Failed to fetch")
-                }
+                // if (response.ok) {
+                //     const data = await response.json();
+                //     setProfile(data);
+                // }
+                // else if (response.status == 401) {
+                //     const response = await fetch(`http://localhost:8080/api/refresh`, {
+                //         method: 'POST',
+                //         headers: {
+                //             'Authorization': `Bearer: ${refreshToken}`,
+                //             'Content-Type': 'application/json'
+                //         }
+                //     });
+                //     if (response.ok) {
+                //         const data = await response.json();
+                //         localStorage.setItem("accessToken", data.token);
+                //         const newAccessToken = data.token
+                //         const retryResponse = await fetch(`http://localhost:8080/Profile/${username}`, {
+                //             method: 'GET',
+                //             headers: {
+                //                 'Authorization': `Bearer ${newAccessToken}`,
+                //                 'Content-Type': 'application/json'
+                //             }
+                //         });
+                //         if(retryResponse.ok) setProfile(await retryResponse.json());
+                //         else {
+                //             localStorage.clear();
+                //             navigate("/LoginUser", {replace: true});
+                //         }
+                //     } else {
+                //         localStorage.clear();
+                //         navigate("/LoginUser", {replace: true});
+                //         return;
+                //     }
+                // }
+                // else {
+                //     setError("Failed to fetch profile details");
+                //     console.error("Failed to fetch")
+                // }
+                const response = await apiFetch(`http://localhost:8080/Profile/${username}`, {
+                    method: 'GET'
+                });
+                if(response.ok) setProfile(await response.json());
+                else if(response.status == 401) navigate("/LoginUser", {replace: true});
+                else setError("Failed to fetch Profile");
             } catch (err) {
                 setError("Can't Connect to Server")
                 console.log(err);
@@ -97,10 +136,10 @@ export default function Profile() {
                 </button>
             </div>
             <div className="Create-note">
-                <button 
+                <button
                     className="create-note-btn"
                     onClick={() => navigate(`/Profile/${username}/Createnote`)}
-                    >Create Note</button>
+                >Create Note</button>
             </div>
         </div>
     );

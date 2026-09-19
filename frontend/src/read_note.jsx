@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
 import { replace, useParams, useSearchParams, useNavigate } from "react-router-dom"
+import { apiFetch } from "./api_fetch";
 
 export default function ReadNote() {
     const [error, setError] = useState('');
-    const token = localStorage.getItem("accessToken")
     const [note, setNote] = useState('');
     const { username, noteId } = useParams();
     const [isEditing, setIsEditing] = useState(false);
@@ -13,20 +13,29 @@ export default function ReadNote() {
 
     const fetchReadNote = async (e) => {
         try {
-            const response = await fetch(`http://localhost:8080/Profile/${username}/ReadNote/${noteId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (response.ok) {
+            // const response = await fetch(`http://localhost:8080/Profile/${username}/ReadNote/${noteId}`, {
+            //     method: 'GET',
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`,
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            // if (response.ok) {
+            //     const data = await response.json();
+            //     setNote(data);
+            //     setEditText(data);
+            // } else {
+            //     setError("Failed to fetch the Note")
+            // }
+            const response = await apiFetch(`http://localhost:8080/Profile/${username}/ReadNote/${noteId}`, {
+                method: 'GET'
+            })
+            if(response.ok) {
                 const data = await response.json();
                 setNote(data);
                 setEditText(data);
-            } else {
-                setError("Failed to fetch the Note")
-            }
+            } else if (response.status == 401) navigate("/LoginUser", {replace: true});
+            else setError("Failed to fetch Note")
         } catch (err) {
             setError("Failed to connect to Server")
         }
@@ -35,20 +44,33 @@ export default function ReadNote() {
     const fetchUpdateNote = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:8080/Profile/${username}/UpdateNote/${noteId}`, {
+            // const response = await fetch(`http://localhost:8080/Profile/${username}/UpdateNote/${noteId}`, {
+            //     method: 'PUT',
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`,
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({ daily_note: editText })
+            // });
+            // if (response.ok) {
+            //     const data = await response.json();
+            //     setNote({ ...note, daily_note: editText });
+            //     setEditText(data);
+            //     setIsEditing(false);
+            // } else {
+            //     setError("Failed to fetch the Note")
+            // }
+            const response = await apiFetch(`http://localhost:8080/Profile/${username}/UpdateNote/${noteId}`, {
                 method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ daily_note: editText })
-            });
+                body: JSON.stringify({daily_note: editText})
+            })
             if (response.ok) {
                 const data = await response.json();
                 setNote({ ...note, daily_note: editText });
                 setEditText(data);
                 setIsEditing(false);
-            } else {
+            } else if(response.status == 401) navigate("/LoginUser", {replace: true}); 
+            else {
                 setError("Failed to fetch the Note")
             }
         } catch (err) {
@@ -62,17 +84,25 @@ export default function ReadNote() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/Profile/${username}/DeleteNote/${noteId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            // const response = await fetch(`http://localhost:8080/Profile/${username}/DeleteNote/${noteId}`, {
+            //     method: 'DELETE',
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`,
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            // if (response.ok) {
+            //     setMessage('Note Delete Successfully');
+            //     navigate(`/Profile/${username}`, {replace: true});
+            // } else setError('Failed To Delete Note')
+            const response = await apiFetch(`http://localhost:8080/Profile/${username}/DeleteNote/${noteId}`, {
+            method:'DELETE'                
             });
             if (response.ok) {
                 setMessage('Note Delete Successfully');
                 navigate(`/Profile/${username}`, {replace: true});
-            } else setError('Failed To Delete Note')
+            } else if (response.status == 401) navigate("/LoginUser", {replace:true}); 
+            else setError('Failed To Delete Note')
         } catch (err) {
             setError('Failed to Connect to server')
         }

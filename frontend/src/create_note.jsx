@@ -1,35 +1,49 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { apiFetch } from "./api_fetch";
 
 export default function CreateNote() {
-    const[note, setNote] = useState("");
-    const[message, setMessage] = useState("");
-    const[error, setError] = useState("");
-    const {username} = useParams(); 
+    const [note, setNote] = useState("");
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+    const { username } = useParams();
     const navigate = useNavigate();
-    const token = localStorage.getItem("accessToken");
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`http://localhost:8080/Profile/${username}/CreateNote`, {
+            // const response = await fetch(`http://localhost:8080/Profile/${username}/CreateNote`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'Authorization': `Bearer ${token}`
+            //     },
+            //     body: JSON.stringify(
+            //         {daily_note: note}
+            //     )
+            // });
+            // if(response.ok) {
+            //     setMessage("Note Created Successfully")
+            //     navigate(`/Profile/${username}`);
+            //     setNote("");
+            // } else {
+            //      setError("Failed to fetch profile details");
+            // }
+            const response = await apiFetch(`http://localhost:8080/Profile/${username}/CreateNote`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
                 body: JSON.stringify(
-                    {daily_note: note}
+                    { daily_note: note }
                 )
             });
-            if(response.ok) {
+            if (response.ok) {
                 setMessage("Note Created Successfully")
                 navigate(`/Profile/${username}`);
                 setNote("");
-            } else {
-                 setError("Failed to fetch profile details");
+            } else if (response.status == 401) navigate("/LoginUser", { replace: true });
+            else {
+                setError("Failed To Fetch")
             }
-        } catch(err) {
+        } catch (err) {
             setError("Failed to Connect to Server")
         }
     };
@@ -41,7 +55,7 @@ export default function CreateNote() {
             <form onSubmit={handleSubmit}>
                 <textarea
                     value={note}
-                    onChange ={(e) => setNote(e.target.value)}
+                    onChange={(e) => setNote(e.target.value)}
                     placeholder="Write your note ..."
                     rows="8"
                 />

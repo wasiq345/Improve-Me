@@ -1,24 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import { apiFetch } from "./api_fetch";
 
 export default function GetNotes() {
     const [notes, setNotes] = useState([]);
     const [error, setError] = useState('');
-    const token = localStorage.getItem("accessToken");
     const { username } = useParams();
+    const navigate = useNavigate();
     const fetchGetNotes = async (e) => {
         try {
-            const response = await fetch(`http://localhost:8080/Profile/${username}/GetNotes`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            // const response = await fetch(`http://localhost:8080/Profile/${username}/GetNotes`, {
+            //     method: 'GET',
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`,
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            // if (response.ok) {
+            //     const data = await response.json();
+            //     setNotes(data);
+            // }
+            // else {
+            //     setError("Failed To Fetch Notes")
+            // }
+            const response = await apiFetch(`http://localhost:8080/Profile/${username}/GetNotes`, {
+                method: 'GET',                
             });
             if (response.ok) {
                 const data = await response.json();
                 setNotes(data);
-            }
+            } else if(response.status == 401) navigate("/LoginUser", {replace:true}); 
             else {
                 setError("Failed To Fetch Notes")
             }
