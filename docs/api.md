@@ -6,7 +6,9 @@ The API listens on `http://localhost:8080` by default. JSON endpoints return JSO
 Authorization: Bearer <access-token>
 ```
 
-Access tokens are JWTs signed with `JWT_SECRET` and expire after one hour. The frontend stores the access token in browser local storage under `accessToken`.
+Access tokens are JWTs signed with `JWT_SECRET` and expire after one hour. Refresh tokens are opaque random tokens stored in the database and expire after 60 days. The frontend stores the access token in browser local storage under `accessToken` and the refresh token under `refreshToken`.
+
+When an access token expires, the frontend sends the refresh token to `/api/refresh` to receive a new one-hour access token. If the refresh token is expired, revoked, or invalid, the user must log in again.
 
 ## Authentication
 
