@@ -23,7 +23,6 @@ export default function Register() {
 
             const data = await response.json();
             if(response.ok) {
-                //setMessage('Registration Successful');
                 navigate("/LoginUser", {replace: true})
             } else {
                 setMessage('Invalid email or password');

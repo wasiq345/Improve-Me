@@ -12,23 +12,7 @@ export default function CreateNote() {
         e.preventDefault();
 
         try {
-            // const response = await fetch(`http://localhost:8080/Profile/${username}/CreateNote`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify(
-            //         {daily_note: note}
-            //     )
-            // });
-            // if(response.ok) {
-            //     setMessage("Note Created Successfully")
-            //     navigate(`/Profile/${username}`);
-            //     setNote("");
-            // } else {
-            //      setError("Failed to fetch profile details");
-            // }
+        
             const response = await apiFetch(`http://localhost:8080/Profile/${username}/CreateNote`, {
                 method: 'POST',
                 body: JSON.stringify(

@@ -5,8 +5,6 @@ import (
 )
 
 func (config *Config) RegisterRoutes(mux *http.ServeMux) {
-	//fileserver := http.FileServer(http.Dir("./frontend"))
-	//mux.Handle("/Dashboard/", http.StripPrefix("/Dashboard", fileserver))
 	mux.HandleFunc("GET /Profile/{username}", config.UserProfile)
 	mux.HandleFunc("GET /Profile/{username}/ReadNote/{note_id}", config.ReadNote)
 	mux.HandleFunc("DELETE /Profile/{username}/DeleteNote/{note_id}", config.DeleteNote)

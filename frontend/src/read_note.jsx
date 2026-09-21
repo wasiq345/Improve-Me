@@ -13,20 +13,6 @@ export default function ReadNote() {
 
     const fetchReadNote = async (e) => {
         try {
-            // const response = await fetch(`http://localhost:8080/Profile/${username}/ReadNote/${noteId}`, {
-            //     method: 'GET',
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     }
-            // });
-            // if (response.ok) {
-            //     const data = await response.json();
-            //     setNote(data);
-            //     setEditText(data);
-            // } else {
-            //     setError("Failed to fetch the Note")
-            // }
             const response = await apiFetch(`http://localhost:8080/Profile/${username}/ReadNote/${noteId}`, {
                 method: 'GET'
             })
@@ -44,22 +30,6 @@ export default function ReadNote() {
     const fetchUpdateNote = async (e) => {
         e.preventDefault();
         try {
-            // const response = await fetch(`http://localhost:8080/Profile/${username}/UpdateNote/${noteId}`, {
-            //     method: 'PUT',
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({ daily_note: editText })
-            // });
-            // if (response.ok) {
-            //     const data = await response.json();
-            //     setNote({ ...note, daily_note: editText });
-            //     setEditText(data);
-            //     setIsEditing(false);
-            // } else {
-            //     setError("Failed to fetch the Note")
-            // }
             const response = await apiFetch(`http://localhost:8080/Profile/${username}/UpdateNote/${noteId}`, {
                 method: 'PUT',
                 body: JSON.stringify({daily_note: editText})
@@ -84,17 +54,6 @@ export default function ReadNote() {
             return;
         }
         try {
-            // const response = await fetch(`http://localhost:8080/Profile/${username}/DeleteNote/${noteId}`, {
-            //     method: 'DELETE',
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     }
-            // });
-            // if (response.ok) {
-            //     setMessage('Note Delete Successfully');
-            //     navigate(`/Profile/${username}`, {replace: true});
-            // } else setError('Failed To Delete Note')
             const response = await apiFetch(`http://localhost:8080/Profile/${username}/DeleteNote/${noteId}`, {
             method:'DELETE'                
             });

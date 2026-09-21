@@ -12,52 +12,6 @@ export default function Profile() {
     useEffect(() => {
         const fetchProfileData = async (e) => {
             try {
-                // const response = await fetch(`http://localhost:8080/Profile/${username}`, {
-                //     method: 'GET',
-                //     headers: {
-                //         'Authorization': `Bearer ${token}`,
-                //         'Content-Type': 'application/json'
-                //     }
-                // });
-
-                // if (response.ok) {
-                //     const data = await response.json();
-                //     setProfile(data);
-                // }
-                // else if (response.status == 401) {
-                //     const response = await fetch(`http://localhost:8080/api/refresh`, {
-                //         method: 'POST',
-                //         headers: {
-                //             'Authorization': `Bearer: ${refreshToken}`,
-                //             'Content-Type': 'application/json'
-                //         }
-                //     });
-                //     if (response.ok) {
-                //         const data = await response.json();
-                //         localStorage.setItem("accessToken", data.token);
-                //         const newAccessToken = data.token
-                //         const retryResponse = await fetch(`http://localhost:8080/Profile/${username}`, {
-                //             method: 'GET',
-                //             headers: {
-                //                 'Authorization': `Bearer ${newAccessToken}`,
-                //                 'Content-Type': 'application/json'
-                //             }
-                //         });
-                //         if(retryResponse.ok) setProfile(await retryResponse.json());
-                //         else {
-                //             localStorage.clear();
-                //             navigate("/LoginUser", {replace: true});
-                //         }
-                //     } else {
-                //         localStorage.clear();
-                //         navigate("/LoginUser", {replace: true});
-                //         return;
-                //     }
-                // }
-                // else {
-                //     setError("Failed to fetch profile details");
-                //     console.error("Failed to fetch")
-                // }
                 const response = await apiFetch(`http://localhost:8080/Profile/${username}`, {
                     method: 'GET'
                 });

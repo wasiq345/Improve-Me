@@ -9,7 +9,7 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //setMessage('Loggin in...') ;
+    
 
         try {
             const response = await fetch('http://localhost:8080/Dashboard/LoginUser', {
@@ -23,7 +23,7 @@ export default function Login() {
             const data = await response.json();
 
             if(response.ok) {
-                //setMessage('Login Successful');
+        
                 localStorage.setItem("username", data.user_name)
                 localStorage.setItem("email", email)
                 localStorage.setItem("accessToken", data.access_token);
@@ -35,7 +35,7 @@ export default function Login() {
         } catch (error) {
             setMessage('Can not connect to the Server')
         }
-       // alert(`Sending Email: ${email} Password: ${password}`);
+
     };
 
     return (

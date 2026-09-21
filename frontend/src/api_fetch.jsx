@@ -7,7 +7,7 @@ export async  function apiFetch(url, options={}) {
         ...options,
         headers: {
             ...options.headers,
-            'Authorization': `Bearer: ${accessToken}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': "application/json"
         }
     });

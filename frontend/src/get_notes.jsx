@@ -9,20 +9,6 @@ export default function GetNotes() {
     const navigate = useNavigate();
     const fetchGetNotes = async (e) => {
         try {
-            // const response = await fetch(`http://localhost:8080/Profile/${username}/GetNotes`, {
-            //     method: 'GET',
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //         'Content-Type': 'application/json'
-            //     }
-            // });
-            // if (response.ok) {
-            //     const data = await response.json();
-            //     setNotes(data);
-            // }
-            // else {
-            //     setError("Failed To Fetch Notes")
-            // }
             const response = await apiFetch(`http://localhost:8080/Profile/${username}/GetNotes`, {
                 method: 'GET',                
             });
