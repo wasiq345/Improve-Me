@@ -15,4 +15,5 @@ func (config *Config) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /Dashboard/LoginUser", config.LoginUser)
 	mux.HandleFunc("POST /api/revoke", config.Revoke)
 	mux.HandleFunc("POST /api/refresh", config.Refresh)
+	mux.HandleFunc("GET /api/health", config.Health)
 }
